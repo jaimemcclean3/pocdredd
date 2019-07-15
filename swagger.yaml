@@ -1,0 +1,181 @@
+swagger: '2.0'
+info:
+  description: API que contiene los datos de localizacion del cliente
+  version: "2.0.0"
+  title: Customer Location API V2
+paths:
+  /v2/customers/locations:
+    post:
+      summary: Search customer locations
+      operationId: customerProductFind
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Objeto con datos de entrada
+          schema:
+            $ref: '#/definitions/CustomerLocationInqRQ'
+      responses:
+        200:
+          description: Success response
+          schema:
+            $ref: '#/definitions/CustomerLocationInqRS'
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/ErrorRS"
+        404:
+          description: Resource not found.
+          schema:
+            $ref: "#/definitions/ErrorRS"
+        500:
+          description: Internal server error.
+          schema:
+            $ref: "#/definitions/ErrorRS"
+        502:
+          description: Bad Gateway
+          schema:
+            $ref: "#/definitions/ErrorRS"
+
+definitions:
+
+  Errors:
+    type: "object"
+    properties:
+      code:
+        type: "string"
+      message:
+        type: "string"
+      field:
+        type: "string"
+
+  Status:
+    description: Estado de la respuesta
+    type: "object"
+    properties:
+      code:
+        description: Codigo del estado HTTP.
+        type: integer
+      message:
+        description: Mensaje del estado HTTP.
+        type: string
+      detail:
+        description: Detalle del estado
+        type: string
+      errors:
+        type: "array"
+        items:
+          $ref: "#/definitions/Errors"
+
+  ErrorRS:
+    description: Objeto que contendra informacion del error
+    type: object
+    properties:
+      rqUID:
+        description: Identificador único de la transacción que permite llevar una traza de la operación.
+        type: string
+      status:
+        $ref: '#/definitions/Status'
+
+  Customer:
+    type: object
+    properties:
+      customerInfo:
+        description: Informacion del cliente
+        type: object
+        properties:
+          clientId:
+            description: Identificador unico del cliente
+            type: string
+          nameData:
+            description: Datos del nombre y apellido del cliente
+            type: object
+            properties:
+              firstName:
+                description: Nombre del cliente
+                type: string
+              lastName:
+                description: Apellido del cliente
+                type: string
+      location:
+        description: Ubicacion fisica del cliente
+        type: object
+        properties:
+          addressDescription:
+            description: Descripcion de la dirección
+            type: string
+          otherAddressDescription:
+            description: Descripcion de otra dirección del cliente
+            type: string
+          streetDescription:
+            description: Descripcion de la calle de ubicacion del cliente
+            type: string
+          countryCode:
+            description: Codigo del pais del cliente
+            type: string
+          countryDescription:
+            description: Descripcion del pais de ubicacion del cliente
+            type: string
+          countryState:
+            description: Estado del país donde esta ubicado el  cliente
+            type: string
+          countryCity:
+            description: Ciudad del país donde esta ubicado el cliente
+            type: string
+          postalCode:
+            description: Código Postal del País de ubicación del cliente
+            type: string
+          residenceCode:
+            description: Código de Residencia del Cliente
+            type: string
+          residenceDescription:
+            description: Descripción de la residencia del cliente
+            type: string
+          apartmentCode:
+            description: Codigo de apartamento del cliente
+            type: string
+          apartmentDescription:
+            description: Descripción del apartamento del cliente
+            type: string
+
+  CustomerLocationInqRQ:
+    description: Objeto que contiene los datos de entrada
+    type: object
+    properties:
+      rqUID:
+        description: rqUID transaction request id
+        type: string
+      searchType:
+        description: Tipo de búsqueda (LOC = Nombre, PAID = Identificación)
+        type: string
+      ident:
+        description: Identificación o nombre del cliente
+        type: string
+    required:
+      - rqUID
+      - searchType
+      - ident
+  CustomerLocationInqRS:
+    description: Objeto con toda la informacion de respuesta del servicio
+    type: object
+    properties:
+      rqUID:
+        description: Identificador único de la transacción que permite llevar una traza de la operación
+        type: string
+      status:
+        $ref: '#/definitions/Status'
+      partyRec:
+        type: object
+        description: Arreglo o coleccion de informacion sobre la ubicacion del cliente
+        properties:
+          customerInfos:
+            description: Se listan una o muchas ubicaciones asociadas a un cliente en particular.
+            type: array
+            items:
+              $ref: '#/definitions/Customer'
+      svcIdent:
+        description: Identificar el código de las transacciones a nivel monetario y no monetario para HOGAN Y KRONER
+        type: string
